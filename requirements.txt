@@ -1,3 +1,4 @@
-spotipy
-eyed3
-requests
+eyed3==0.9.7
+requests==2.28.1
+spotipy==2.22.0
+urllib3==1.26.12
