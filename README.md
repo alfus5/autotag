@@ -10,9 +10,9 @@ Pour installer AUTOTAG, vous devez d'abord cloner le dépôt Github sur votre ma
 
 vous devez installer python :
 
-    >>> pip install -r requirements.txt
+    pip install -r requirements.txt
     
-    >>> python autotag.py
+    python autotag.py
 
 
 ### Fonctionnalitées prévue
