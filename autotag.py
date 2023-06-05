@@ -7,9 +7,14 @@ import sys
 import re
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+from dotenv import load_dotenv
 import eyed3
 import requests
 import time
+
+load_dotenv()
+client_id = os.getenv('clientid')
+client_secret = os.getenv('clientsec')
 
 
 
@@ -25,8 +30,10 @@ for file in os.listdir(folder):
 
     print('\033[32m fichier: \033[0m', file)
     filename = file
-    pattern = r'^(.+?) - (.+?)(?: \(clip officiel\))?\.mp3$'
+    pattern = r'^(.+?) - (.+?).mp3$'
     match = re.search(pattern, filename)
+    artists = ""
+    title = ""
 
     if match:
         artists = match.group(1).split(' feat. ')
@@ -39,13 +46,14 @@ for file in os.listdir(folder):
         print(f"Titre: {title}")
     else:
         print("The file name does not match the expected format. Check the file extension or make sure it is not corrupted.")
+        continue
 
 
-    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="a4acf43b65614f14b20bb03a57918f14", client_secret="1257ab065e6d451f85ede31c3c5884bc"))
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=client_id, client_secret=client_secret))
 
     artist = artists
 
-    results = sp.search(q=f"artist:{artist} track:{title}", type="track")
+    results = sp.search(q=f"artist:{artist} track:{title} filename:{file}", type="track")
     tracks = results["tracks"]["items"]
 
     if tracks:
@@ -70,7 +78,13 @@ for file in os.listdir(folder):
         audiofile.tag.release_date = "2022-01-01"
         audiofile.tag.save()
         print("The file located in", audiofile, "has been successfully modified✅")
+        if file.endswith(".mp3"):
+            new_name = audiofile.tag.artist + " - " + audiofile.tag.title + ".mp3"
+            os.rename(os.path.join(folder, file), os.path.join(folder, new_name))
+            print("The filename has been edited for more consistency")
     else:
         print("No songs were found.❌")
+    
+    
 
 print("\n\n\nAll .mp3 files have been tagged")
